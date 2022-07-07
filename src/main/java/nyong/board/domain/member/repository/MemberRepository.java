@@ -11,4 +11,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     // 존재 여부 확인
     boolean existsByUsername(String username);
+
+    Optional<Member> findByRefreshToken(String refreshToken);
 }

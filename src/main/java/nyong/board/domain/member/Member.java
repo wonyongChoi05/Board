@@ -34,6 +34,9 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(length = 1000)
+    private String refreshToken;
+
     // 정보 수정
     public void updatePassword(PasswordEncoder passwordEncoder, String password){
         this.password = passwordEncoder.encode(password);
@@ -47,6 +50,13 @@ public class Member extends BaseTimeEntity {
         this.nickName = nickName;
     }
 
+    public void updateRefreshToken(String refreshToken){
+        this.refreshToken = refreshToken;
+    }
+
+    public void destroyRefreshToken(){
+        this.refreshToken = null;
+    }
     // 패스워드 암호화
     public void encodePassword(PasswordEncoder passwordEncoder){
         this.password = passwordEncoder.encode(password);
