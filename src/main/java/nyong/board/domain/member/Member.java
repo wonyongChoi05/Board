@@ -2,9 +2,15 @@ package nyong.board.domain.member;
 
 import lombok.*;
 import nyong.board.domain.BaseTimeEntity;
+import nyong.board.domain.comment.Comment;
+import nyong.board.domain.post.Post;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static javax.persistence.CascadeType.ALL;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -52,6 +58,23 @@ public class Member extends BaseTimeEntity {
 
     public void updateRefreshToken(String refreshToken){
         this.refreshToken = refreshToken;
+    }
+
+    @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
+    private List<Post> postList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
+    private List<Comment> commentList = new ArrayList<>();
+
+    //== 연관관계 메서드 ==//
+    public void addPost(Post post){
+        //post의 writer 설정은 post에서 함
+        postList.add(post);
+    }
+
+    public void addComment(Comment comment){
+        //comment의 writer 설정은 comment에서 함
+        commentList.add(comment);
     }
 
     public void destroyRefreshToken(){
