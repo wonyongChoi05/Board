@@ -2,7 +2,10 @@ package nyong.board.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import nyong.board.domain.member.service.LoginService;
 import nyong.board.global.login.filter.JsonUsernamePasswordAuthenticationFilter;
+import nyong.board.global.login.hadnler.LoginFailureHandler;
+import nyong.board.global.login.hadnler.LoginSuccessJWTProvideHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private final LoginService loginService;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -42,14 +46,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManager() { // AuthenticationManager 등록
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();//DaoAuthenticationProvider 사용
 
-        //PasswordEncoder로는 PasswordEncoderFactories.createDelegatingPasswordEncoder() 사용
+//        PasswordEncoder로는 PasswordEncoderFactories.createDelegatingPasswordEncoder() 사용
         provider.setPasswordEncoder(passwordEncoder());
 
-        //provider.setUserDetailsService(loginService); // 이후 작성할 코드
+        provider.setUserDetailsService(loginService);
         return new ProviderManager(provider);
     }
 
-    /*@Bean
+    @Bean
     public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler(){
         return new LoginSuccessJWTProvideHandler();
     }
@@ -57,16 +61,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public LoginFailureHandler loginFailureHandler(){
         return new LoginFailureHandler();
-    }*/
+    }
 
     @Bean
     public JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordLoginFilter(){
         JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordLoginFilter = new JsonUsernamePasswordAuthenticationFilter(objectMapper);
-        jsonUsernamePasswordLoginFilter.setAuthenticationManager(authenticationManager());
 
-        // 이후 작성할 코드
-        //jsonUsernamePasswordLoginFilter.setAuthenticationSuccessHandler(loginSuccessJWTProvideHandler());
-        //jsonUsernamePasswordLoginFilter.setAuthenticationFailureHandler(loginFailureHandler());
+        jsonUsernamePasswordLoginFilter.setAuthenticationManager(authenticationManager());
+        jsonUsernamePasswordLoginFilter.setAuthenticationSuccessHandler(loginSuccessJWTProvideHandler());
+        jsonUsernamePasswordLoginFilter.setAuthenticationFailureHandler(loginFailureHandler());
+
         return jsonUsernamePasswordLoginFilter;
     }
 }
