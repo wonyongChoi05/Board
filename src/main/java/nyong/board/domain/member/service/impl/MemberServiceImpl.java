@@ -8,6 +8,8 @@ import nyong.board.domain.member.dto.MemberUpdateDto;
 import nyong.board.domain.member.dto.SecurityUtil;
 import nyong.board.domain.member.repository.MemberRepository;
 import nyong.board.domain.member.service.MemberService;
+import nyong.board.global.exception.MemberException;
+import nyong.board.global.exception.MemberExceptionType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +38,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void update(MemberUpdateDto memberUpdateDto) throws Exception {
         Member member = memberRepository.findByUsername(SecurityUtil.getLoginUsername())
-                .orElseThrow(() -> new Exception("회원이 존재하지 않습니다"));
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
         memberUpdateDto.getName().ifPresent(member::updateName);
         memberUpdateDto.getNickName().ifPresent(member::updateNickName);
@@ -45,7 +47,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void updatePassword(String checkPassword, String toBePassword) throws Exception {
         Member member = memberRepository.findByUsername(SecurityUtil.getLoginUsername())
-                .orElseThrow(() -> new Exception("회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
         if (!member.matchPassword(passwordEncoder, checkPassword)){
             throw new Exception("비밀번호가 일치하지 않습니다.");
@@ -57,7 +59,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void withdraw(String checkPassword) throws Exception {
         Member member = memberRepository.findByUsername(SecurityUtil.getLoginUsername())
-                .orElseThrow(() -> new Exception("회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
         memberRepository.delete(member);
     }
@@ -65,7 +67,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberInfoDto getInfo(Long id) throws Exception {
         Member findMember = memberRepository.findById(id)
-                .orElseThrow(() -> new Exception("회원이 없습니다."));
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
         return new MemberInfoDto(findMember);
     }
@@ -73,7 +75,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberInfoDto getMyInfo() throws Exception {
         Member findMember = memberRepository.findByUsername(SecurityUtil.getLoginUsername())
-                .orElseThrow(() -> new Exception("회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
         return new MemberInfoDto(findMember);
     }
