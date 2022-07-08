@@ -26,7 +26,7 @@ public class MemberServiceImpl implements MemberService {
         member.addUserAuthority();
         member.encodePassword(passwordEncoder);
 
-        if (memberRepository.findByUsername(memberSignUpDto.username()).isPresent()){
+        if (memberRepository.findByUsername(memberSignUpDto.getUsername()).isPresent()){
             throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
         }
 
@@ -38,8 +38,8 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findByUsername(SecurityUtil.getLoginUsername())
                 .orElseThrow(() -> new Exception("회원이 존재하지 않습니다"));
 
-        memberUpdateDto.name().ifPresent(member::updateName);
-        memberUpdateDto.nickName().ifPresent(member::updateNickName);
+        memberUpdateDto.getName().ifPresent(member::updateName);
+        memberUpdateDto.getNickName().ifPresent(member::updateNickName);
     }
 
     @Override

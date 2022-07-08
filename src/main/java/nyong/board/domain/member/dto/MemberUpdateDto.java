@@ -1,7 +1,16 @@
 package nyong.board.domain.member.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 import java.util.Optional;
 
-public record MemberUpdateDto(Optional<String> name, Optional<String> nickName,
-                              Optional<Integer> age) {
+@AllArgsConstructor
+@Data
+public class MemberUpdateDto {
+
+    Optional<String> name;
+    Optional<String> nickName;
+    Optional<Integer> age;
+
 }
